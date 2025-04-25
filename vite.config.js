@@ -8,7 +8,7 @@ export default defineConfig ({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:4040',
+        target: 'https://fastcnc-dxf-app-master-1.onrender.com',
         changeOrigin: true,
         secure: false,
         rewrite: path => path.replace (/^\/api/, ''), // strip /api before forwarding
