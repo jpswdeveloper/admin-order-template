@@ -127,11 +127,11 @@ const DetailPanel = ({ order }: { order: any }) => {
           py: 1
         }}
       >
-        <InfoLabel label="Net price" color="#587B5B" value={order.totalAmount} />
-        <InfoLabel label="Shipping" color="#587B5B" value={order.additionalCost.shipping_cost} />
+        <InfoLabel label="Net price" color="#587B5B" value={order?.totalAmount} />
+        <InfoLabel label="Shipping" color="#587B5B" value={order?.additionalCost?.shipping_cost} />
         {/* <InfoLabel label="VAT (23.0%)" color="#587B5B" value={order.additionalCost.vat_rate} /> */}
-        <InfoLabel label={`VAT (${order.additionalCost.vat_rate}%)`} color="#587B5B" value={order.additionalCost.vat_rate} />
-        <InfoLabel label="Total" color="#D63638" value={order.totalAmount} />
+        <InfoLabel label={`VAT (${order?.additionalCost?.vat_rate}%)`} color="#587B5B" value={order?.additionalCost?.vat_rate} />
+        <InfoLabel label="Total" color="#D63638" value={order?.totalAmount} />
       </Box>
     </Box>
   );
