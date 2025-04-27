@@ -62,7 +62,7 @@ const OrdersTable = () => {
     const fetchOrders = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get("/api/api/orders", {
+        const response = await axios.get("https://fastcnc-dxf-app-master-1.onrender.com/api/orders", {
           params: {
             page: pagination.pageIndex + 1,
             limit: pagination.pageSize
