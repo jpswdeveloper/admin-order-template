@@ -9,6 +9,7 @@ import axios from "axios";
 import { Check, Schedule } from "@mui/icons-material";
 import DetailPanel from "./DetailPanel";
 import { useNavigate } from "react-router-dom";
+import moment from "moment";
 
 type OrderItem = {
   id: string;
@@ -28,6 +29,11 @@ type OrderItem = {
 };
 
 type Order = {
+  city?: string;
+  street?: string;
+  country?:{
+    label:string
+  };
   total_amount: any;
   _id: string;
   id: number;
@@ -38,8 +44,10 @@ type Order = {
   vat: string;
   updated: string;
   status: "Calculator Only" | "Pending";
-  created?: string;
   email?: string;
+  finalized:boolean;
+  created_at?: string;
+  updated_at?: string;
   materialDetails: OrderItem[];
 };
 
@@ -86,21 +94,30 @@ const OrdersTable = () => {
       },
       { accessorKey: "name", header: "Name" },
       { accessorKey: "phone", header: "Phone" },
-      { accessorKey: "address", header: "Address" },
-      // {
-      //   accessorKey: "updated",
-      //   header: "Updated",
-      //   Cell: ({ row }) => (
-      //     <Box sx={{ color: "#666", fontSize: "0.85rem" }}>
-      //       {row.original.updated}
-      //     </Box>
-      //   )
-      // },
+      {
+        accessorKey: "country",
+        header: "Address",
+        Cell: ({ row }) => {
+          return (<Typography>{row?.original?.country?.label} {row?.original?.city} {row?.original?.street}</Typography>)
+        }
+      },
+      {
+        accessorKey: "email",
+        header: "Email",
+        Cell: ({ row }) => (
+          <Link
+            href={`mailto:${row.original.email}`}
+            sx={{ color: "#2980b9" }}
+          >
+            {row.original.email}
+          </Link>
+        )
+      },
+  
       {
         accessorKey: "status",
         header: "Status",
-        Cell: ({ cell }) => {
-          const val = cell.getValue<string>();
+        Cell: ({ row }) => {
 
           return (
             <Box
@@ -127,11 +144,25 @@ const OrdersTable = () => {
                 }
               }}
             >
-              {val}
+              {row.original.finalized ? 'Finalized':'Pending'}
             </Box>
           );
         }
-      }
+      },
+      {
+        accessorKey: "created_at",
+        header: "Created At",
+        Cell: ({ row }) => {
+          return moment(row.original.created_at).format("YYYY-MM-DD HH:mm:ss"); // Format using Moment.js
+        }
+      },
+      {
+        accessorKey: "updated_at",
+        header: "Updated At",
+        Cell: ({ row }) => {
+          return moment(row.original.updated_at).format("YYYY-MM-DD HH:mm:ss"); // Format using Moment.js
+        }
+      },
     ],
     []
   );
