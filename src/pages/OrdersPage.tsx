@@ -32,7 +32,7 @@ const OrdersPage = () => {
       sx={{
         overflow: 'hidden',
         height: "100vh",
-        background: `linear-gradient(to bottom right, #0f172a, #1e293b)`,
+        // background: `linear-gradient(to bottom right, #0f172a, #1e293b)`,
       }}
     >
       <Container maxWidth="lg" sx={{ py: 6 }}>
@@ -42,7 +42,7 @@ const OrdersPage = () => {
           alignItems="center"
           mb={3}
         >
-          <Typography variant="h5" fontWeight="bold" sx={{ color: "white" }}>
+          <Typography variant="h5" fontWeight="bold" sx={{ color: "black" }}>
             Orders
           </Typography>
           <Button

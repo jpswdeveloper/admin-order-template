@@ -4,12 +4,14 @@ import {
   useMaterialReactTable,
   type MRT_ColumnDef
 } from "material-react-table";
-import { Box, Typography, Chip, Link } from "@mui/material";
+import { Box, Typography, Chip, Link, CircularProgress, TextField, MenuItem } from "@mui/material";
 import axios from "axios";
 import { Check, Schedule } from "@mui/icons-material";
 import DetailPanel from "./DetailPanel";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
+
+
 
 type OrderItem = {
   id: string;
@@ -43,7 +45,7 @@ type Order = {
   address: string;
   vat: string;
   updated: string;
-  status: "Calculator Only" | "Pending";
+  status: "Pending" | "In Progress" | "Manufactured" | "Delivered";
   email?: string;
   finalized:boolean;
   created_at?: string;
@@ -117,34 +119,100 @@ const OrdersTable = () => {
       {
         accessorKey: "status",
         header: "Status",
-        Cell: ({ row }) => {
-
+        Cell: ({ row, table }) => {
+          const [status, setStatus] = useState(row.original.status||'Pending');
+          const [isUpdating, setIsUpdating] = useState(false);
+      
+          const handleStatusChange = async (event) => {
+            const newStatus = event.target.value;
+            setIsUpdating(true);
+            try {
+              await axios.put(`https://fastcnc-dxf-app-master-1.onrender.com/api/orders/${row.original._id}/status`, {
+                status: newStatus
+              });
+              console.log("Status updated successfully",newStatus);
+              setStatus(newStatus);
+              setPagination(prev => ({ ...prev }));
+            } catch (error) {
+              console.error("Error updating status:", error);
+            } finally {
+              setIsUpdating(false);
+            }
+          };
+      
+          const statusColors = {
+            Pending: "#f39c12",
+            "In Progress": "#3498db",
+            Manufactured: "#2ecc71",
+            Delivered: "#27ae60"
+          };
+      
           return (
-            <Box
-              sx={{
-                border: "1px solid #ccc",
-                borderRadius: "6px",
-                padding: "4px 8px",
-                fontSize: "0.875rem",
-                minWidth: 120,
-                backgroundColor: "#fff",
-                position: "relative",
-                "&::after": {
-                  content: '""',
-                  position: "absolute",
-                  top: "50%",
-                  right: "8px",
-                  width: 0,
-                  height: 0,
-                  borderLeft: "5px solid transparent",
-                  borderRight: "5px solid transparent",
-                  borderTop: "5px solid #999",
-                  transform: "translateY(-50%)",
-                  pointerEvents: "none"
-                }
-              }}
-            >
-              {row.original.finalized ? 'Finalized':'Pending'}
+            <Box sx={{ position: 'relative', minWidth: 150 }}>
+              <TextField
+                select
+                value={status}
+                onChange={handleStatusChange}
+                disabled={isUpdating}
+                variant="outlined"
+                size="small"
+                fullWidth
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    backgroundColor: `${statusColors[status]}20`,
+                    borderColor: statusColors[status],
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: statusColors[status],
+                    },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: statusColors[status],
+                      borderWidth: 1,
+                    },
+                  },
+                  '& .MuiSelect-select': {
+                    paddingRight: '32px', // Space for loading indicator
+                  },
+                }}
+                SelectProps={{
+                  MenuProps: {
+                    PaperProps: {
+                      sx: {
+                        '& .MuiMenuItem-root': {
+                          padding: '6px 16px',
+                        },
+                      },
+                    },
+                  },
+                }}
+              >
+                {Object.entries(statusColors).map(([key, color]) => (
+                  <MenuItem key={key} value={key}>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Box
+                        sx={{
+                          width: 10,
+                          height: 10,
+                          borderRadius: '50%',
+                          backgroundColor: color,
+                          marginRight: 1,
+                        }}
+                      />
+                      {key}
+                    </Box>
+                  </MenuItem>
+                ))}
+              </TextField>
+              {isUpdating && (
+                <CircularProgress
+                  size={20}
+                  sx={{
+                    position: 'absolute',
+                    right: 8,
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                  }}
+                />
+              )}
             </Box>
           );
         }
