@@ -135,11 +135,11 @@ const DetailPanel = ({ order }: { order: any }) => {
                   <Box display="flex" alignItems="center" gap={1}>
                     <span>
                       {v?.price?.quantity} x{" "}
-                      {v?.price?.cost_breakdown?.total_price} =
+                      {v.price?.cost_breakdown?.setup_price} =
                     </span>
                     <StyledTag>
                       {v?.price?.quantity} x{" "}
-                      {v?.price?.cost_breakdown?.total_price}
+                      {v.price?.cost_breakdown?.setup_price}
                     </StyledTag>
                   </Box>
                 </Box>
