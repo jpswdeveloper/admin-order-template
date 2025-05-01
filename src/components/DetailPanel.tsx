@@ -17,91 +17,153 @@ const DetailPanel = ({ order }: { order: any }) => {
         }}
       >
         <Box sx={{ flex: 2 }}>
+          {/* Metrics Section */}
+          {order.materialDetails.map((v, index) => {
+            return (
+              <Box
+                key={v._id}
+                sx={{ display: "flex", mb: 2, justifyContent: "space-evenly" }}
+              >
+                <Box
+                  sx={{
+                    mb: 3,
+                    p: 2,
+                    border: "1px solid #eee",
+                    borderRadius: 2
+                  }}
+                >
+                  <Typography fontWeight="bold" mb={1}>
+                    Metrics #{index + 1}
+                  </Typography>
 
-          
-        {/* Metrics Section */}
-        {order.materialDetails.map((v,index)=> {
-          return (
-            <Box key={v._id} sx={{display: "flex", mb: 2,  justifyContent:'space-evenly',}}>
-              <Box>
-                <Typography fontWeight="bold" mb={1}>
-                  Metrics #{index + 1}
-                </Typography>
-                <LabelBlock
-                  label="Material"
-                  color="#f1c40f"
-                  value="Steel S235 / 1.0038"
-                  suffix="6.0 mm"
+                  {/* Material */}
+                  <LabelBlock
+                    label="Material"
+                    color="#f1c40f"
+                    value={v?.data?.material_name || "Steel DC01"}
+                    suffix={`${v?.price?.thickness} mm`}
                   />
-                <LabelBlock
-                  label="Dimensions"
-                  color="#3498db"
-                  value="182.5 mm x 45.74 mm"
-                />
-                <LabelBlock
-                  label="Surface Area"
-                  color="#3498db"
-                  value="0.0083 x 41.958"
-                  suffix="= 0.35"
-                />
-                <LabelBlock
-                  label="Cutting Line"
-                  color="#2980b9"
-                  value="0.7016 x 0.932"
-                  suffix="= 0.65"
-                />
-                <LabelBlock
-                  label="Closed Loops"
-                  color="#2980b9"
-                  value="5 x 0.098"
-                  suffix="= 0.49"
-                />
-                <LabelBlock
-                  label="Setup Price"
-                  color="#95a5a6"
-                  value="3.265 / 1"
-                  suffix="= 3.27"
-                />
-                <LabelBlock label="Unit Price" color="#c0392b" value="4.76" />
-              </Box>
 
-              {/* Qty / Price Section */}
-              <Box>
-                <Typography fontWeight="bold" mb={1}>
-                  Qty / Price
-                </Typography>
-                <Box display="flex" alignItems="center" gap={1}>
-                  <span>
-                    {v?.price?.quantity} x{" "}
-                    {v?.price?.cost_breakdown?.total_price} =
-                  </span>
-                  <StyledTag>
-                    {v?.price?.quantity} x{" "}
-                    {v?.price?.cost_breakdown?.total_price}
-                  </StyledTag>
+                  {/* Dimensions */}
+                  <LabelBlock
+                    label="Dimensions"
+                    color="#3498db"
+                    value={`${v.data?.dimensions?.[0]?.toFixed(
+                      2
+                    )} x ${v.data?.dimensions?.[1]?.toFixed(2)} mm`}
+                  />
+
+                  {/* Surface Area Calculation */}
+                  <LabelBlock
+                    label="Surface Area"
+                    color="#3498db"
+                    value={`${(v.data?.surface_area / 1000000).toFixed(
+                      4
+                    )} m² × ${v.price?.original_costs?.cost_per_m2 }`}
+                    suffix={`= ${(
+                      (v.data?.surface_area / 1000000) *
+                      (v.price?.original_costs?.cost_per_m2)
+                    ).toFixed(2)} EUR`}
+                  />
+
+                  {/* Cutting Line Calculation */}
+                  <LabelBlock
+                    label="Cutting Line"
+                    color="#2980b9"
+                    value={`${(v.data?.cutting_line / 1000).toFixed(4)} m × ${
+                      v.price?.original_costs?.cost_factor 
+                    }`}
+                    suffix={`= ${(
+                      (v.data?.cutting_line / 1000) *
+                      (v.price?.original_costs?.cost_factor)
+                    ).toFixed(2)} EUR`}
+                  />
+
+                  {/* Closed Loops Calculation */}
+                  <LabelBlock
+                    label="Closed Loops"
+                    color="#2980b9"
+                    value={`${v.data?.closed_loops } × ${
+                      v.price?.original_costs?.loop_cost_per_loop
+                    }`}
+                    suffix={`= ${(
+                      (v.data?.closed_loops) *
+                      (v.price?.original_costs?.loop_cost_per_loop )
+                    ).toFixed(2)} EUR`}
+                  />
+
+                  {/* Setup Price */}
+                  <LabelBlock
+                    label="Setup Price"
+                    color="#95a5a6"
+                    value={`${v.price?.cost_breakdown?.setup_price} / ${
+                      v?.price?.quantity
+                    }`}
+                    suffix={`= ${(
+                      (v.price?.cost_breakdown?.setup_price ) / (v?.data?.quantity)
+                    ).toFixed(2)} EUR`}
+                  />
+
+                  {/* Unit Price */}
+                  <LabelBlock
+                    label="Unit Price"
+                    color="#c0392b"
+                    value={
+                      v.price?.cost_breakdown?.price_per_unit?.toFixed(2) 
+                      
+                    }
+                    suffix="EUR"
+                  />
+
+                  {/* Total Price */}
+                    <LabelBlock
+                      label="Total Price"
+                      color="#27ae60"
+                      value={`${
+                        (
+                          v?.price?.cost_breakdown?.total_price
+                        )?.toFixed(2)
+                      } EUR`}
+                      sx={{ fontWeight: "bold", mt: 1 }}
+                    />
+                </Box>
+                {/* Qty / Price Section */}
+                <Box>
+                  <Typography fontWeight="bold" mb={1}>
+                    Qty / Price
+                  </Typography>
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <span>
+                      {v?.price?.quantity} x{" "}
+                      {v?.price?.cost_breakdown?.total_price} =
+                    </span>
+                    <StyledTag>
+                      {v?.price?.quantity} x{" "}
+                      {v?.price?.cost_breakdown?.total_price}
+                    </StyledTag>
+                  </Box>
+                </Box>
+
+                {/* Picture */}
+                <Box>
+                  <Typography fontWeight="bold" mb={1}>
+                    Picture
+                  </Typography>
+                  <Box display="flex" alignItems="center" gap={1} mb={2}>
+                    <span>{v.svg_url}</span>
+                    <a
+                      href={`https://flusk-backend.onrender.com${v.svg_url}`}
+                      style={{ color: "#2980b9" }}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      View
+                    </a>
+                  </Box>
                 </Box>
               </Box>
-
-              {/* Picture */}
-              <Box>
-                <Typography fontWeight="bold" mb={1}>
-                  Picture
-                </Typography>
-                <Box display="flex" alignItems="center" gap={1} mb={2}>
-                  <span>{v.svg_url}</span>
-                  <a
-                    href={`https://flusk-backend.onrender.com${v.svg_url}`}
-                    style={{ color: "#2980b9" }}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    View
-                  </a>
-                </Box>
-              </Box>
-            </Box>
-          );
-        })}
+            );
+          })}
         </Box>
 
         {/* Order Info */}
