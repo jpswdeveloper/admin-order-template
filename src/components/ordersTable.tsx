@@ -252,7 +252,7 @@ const OrdersTable = () => {
 
     muiTableContainerProps: {
       sx: {
-        height: "400px",
+        height: "100%",
         overflow: "auto"
       }
     },
@@ -273,7 +273,11 @@ const OrdersTable = () => {
   return (
     <Box
       sx={{
-        display: "flex"
+        display: "flex",
+        height: "100%",
+        width: "100%",
+        flexDirection: "column",
+        overflow: "hidden",
       }}
     >
       <MaterialReactTable table={table} />

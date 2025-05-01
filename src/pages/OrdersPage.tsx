@@ -4,7 +4,6 @@ import OrdersTable from "../components/ordersTable";
 import {
   Box,
   Container,
-  Paper,
   Typography,
   Button,
   Stack
@@ -30,34 +29,75 @@ const OrdersPage = () => {
   return (
     <Box
       sx={{
-        overflow: "hidden",
         height: "100vh",
-        width: "100%",
-        display: "flex"
+        width: "100vw",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
       }}
     >
-      <Container maxWidth={false} disableGutters sx={{ py: 4 ,px:2, width: "100%" }}>
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-          mb={3}
-        >
-          <Typography variant="h5" fontWeight="bold" sx={{ color: "black" }}>
-            Orders
-          </Typography>
-          <Button
-            variant="contained"
-            color="error"
-            onClick={handleLogout}
-            sx={{ borderRadius: 2, textTransform: "none" }}
+      {/* Header Section - takes 20% of height */}
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          backgroundColor: "white",
+          boxShadow: 1,
+          p: 2
+        }}
+      >
+        <Container maxWidth={false} sx={{ height: "100%" }}>
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            sx={{ height: "100%" }}
           >
-            Logout
-          </Button>
-        </Stack>
+            <Box>
+              <Typography variant="h4" fontWeight="bold">
+                Orders Dashboard
+              </Typography>
+              <Typography variant="subtitle1" color="text.secondary">
+                Manage all customer orders
+              </Typography>
+            </Box>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={handleLogout}
+              sx={{
+                borderRadius: 2,
+                textTransform: "none",
+                px: 3,
+                py: 1
+              }}
+            >
+              Logout
+            </Button>
+          </Stack>
+        </Container>
+      </Box>
 
-        <OrdersTable />
-      </Container>
+      {/* Table Section - takes 80% of height */}
+      <Box
+        sx={{
+          height: "80%",
+          overflow: "hidden",
+          p: 2
+        }}
+      >
+        <Container
+          maxWidth={false}
+          sx={{
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            p: 2
+          }}
+        >
+          <OrdersTable />
+        </Container>
+      </Box>
     </Box>
   );
 };
