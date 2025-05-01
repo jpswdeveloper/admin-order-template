@@ -1,8 +1,39 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
-
+import { getExchangeRates, convertAmount } from "./currency";
 const DetailPanel = ({ order }: { order: any }) => {
   console.log("DetailPanel order", order);
+  const [rates, setRates] = useState(null);
+  const [targetCurrency, setTargetCurrency] = useState("EUR");
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchRates = async () => {
+      setIsLoading(true);
+      const fetchedRates = await getExchangeRates();
+      setRates(fetchedRates);
+      setIsLoading(false);
+    };
+    fetchRates();
+  }, []);
+
+  const formatCurrency = (value, currency) => {
+    if (!value) return "0.00";
+    const convertedValue = rates
+      ? convertAmount(value, currency, rates)
+      : value;
+      console.log("Converted Value", value,currency);
+
+    return new Intl.NumberFormat(undefined, {
+      style: "currency",
+      currency: targetCurrency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(convertedValue);
+  };
+
+  if (isLoading) return <div>Loading currency rates...</div>;
+
   return (
     <Box>
       {/* Metrics will be iterateable */}
@@ -59,11 +90,19 @@ const DetailPanel = ({ order }: { order: any }) => {
                     color="#3498db"
                     value={`${(v.data?.surface_area / 1000000).toFixed(
                       4
-                    )} m² × ${v.price?.original_costs?.cost_per_m2 }`}
-                    suffix={`= ${(
-                      (v.data?.surface_area / 1000000) *
-                      (v.price?.original_costs?.cost_per_m2)
-                    ).toFixed(2)} EUR`}
+                    )} m² × ${v.price?.original_costs?.cost_per_m2}`}
+                    suffix={`= ${
+                      order.currency&&order.currency !== "EUR"
+                        ? `${formatCurrency(
+                            (v.data?.surface_area / 1000000) *
+                              v.price?.original_costs?.cost_per_m2,
+                            order.currency
+                          )} ${order.currency}`
+                        : `${(
+                            (v.data?.surface_area / 1000000) *
+                            v.price?.original_costs?.cost_per_m2
+                          ).toFixed(2)} EUR`
+                    }`}
                   />
 
                   {/* Cutting Line Calculation */}
@@ -71,37 +110,58 @@ const DetailPanel = ({ order }: { order: any }) => {
                     label="Cutting Line"
                     color="#2980b9"
                     value={`${(v.data?.cutting_line / 1000).toFixed(4)} m × ${
-                      v.price?.original_costs?.cost_factor 
+                      v.price?.original_costs?.cost_factor
                     }`}
-                    suffix={`= ${(
-                      (v.data?.cutting_line / 1000) *
-                      (v.price?.original_costs?.cost_factor)
-                    ).toFixed(2)} EUR`}
+                    suffix={`= ${
+                      order.currency&&order.currency
+                        ? `${formatCurrency(
+                            (v.data?.cutting_line / 1000) *
+                              v.price?.original_costs?.cost_factor,
+                            order.currency
+                          )} ${order.currency}`
+                        : `${(
+                            (v.data?.cutting_line / 1000) *
+                            v.price?.original_costs?.cost_factor
+                          ).toFixed(2)} EUR`
+                    }`}
                   />
 
                   {/* Closed Loops Calculation */}
                   <LabelBlock
                     label="Closed Loops"
                     color="#2980b9"
-                    value={`${v.data?.closed_loops } × ${
-                      v.price?.original_costs?.loop_cost_per_loop
+                    value={`${v.data?.closed_loops} × ${v.price?.original_costs?.loop_cost_per_loop}`}
+                    suffix={`= ${
+                      order.currency&& order.currency !=='EUR'                      // Check if order.currency is not EUR
+                        ? `${formatCurrency(
+                            v.data?.closed_loops *
+                              v.price?.original_costs?.loop_cost_per_loop,
+                            order.currency
+                          )} ${order.currency}`
+                        : `${(
+                            v.data?.closed_loops *
+                            v.price?.original_costs?.loop_cost_per_loop
+                          ).toFixed(2)} EUR`
                     }`}
-                    suffix={`= ${(
-                      (v.data?.closed_loops) *
-                      (v.price?.original_costs?.loop_cost_per_loop )
-                    ).toFixed(2)} EUR`}
                   />
 
                   {/* Setup Price */}
                   <LabelBlock
                     label="Setup Price"
                     color="#95a5a6"
-                    value={`${v.price?.cost_breakdown?.setup_price} / ${
-                      v?.price?.quantity
+                    value={`${v.price?.cost_breakdown?.setup_price} / ${v?.price?.quantity}`}
+                    suffix={`= ${
+                      order.currency&& order.currency !== 'EUR' // Check if order.currency is not EUR
+                        ? `${formatCurrency(
+                            v.price?.cost_breakdown?.setup_price /
+                              v?.data?.quantity,
+                            order.currency
+                          )} ${order.currency}`
+                        : `${(
+                            v.price?.cost_breakdown?.setup_price /
+                            v?.data?.quantity
+                          ).toFixed(2)} EUR`
                     }`}
-                    suffix={`= ${(
-                      (v.price?.cost_breakdown?.setup_price ) / (v?.data?.quantity)
-                    ).toFixed(2)} EUR`}
                   />
 
                   {/* Unit Price */}
@@ -109,24 +169,35 @@ const DetailPanel = ({ order }: { order: any }) => {
                     label="Unit Price"
                     color="#c0392b"
                     value={
-                      v.price?.cost_breakdown?.price_per_unit?.toFixed(2) 
-                      
+                      order.currency&&order.currency !== 'EUR' // Check if order.currency is not EUR
+                        ? `${formatCurrency(
+                            v.price?.cost_breakdown?.price_per_unit,
+                            order.currency
+                          )} ${order.currency}`
+                        : `${v.price?.cost_breakdown?.price_per_unit?.toFixed(
+                            2
+                          )} EUR`
                     }
-                    suffix="EUR"
                   />
 
                   {/* Total Price */}
-                    <LabelBlock
-                      label="Total Price"
-                      color="#27ae60"
-                      value={`${
-                        (
-                          v?.price?.cost_breakdown?.total_price
-                        )?.toFixed(2)
-                      } EUR`}
-                      sx={{ fontWeight: "bold", mt: 1 }}
-                    />
+                  <LabelBlock
+                    label="Total Price"
+                    color="#27ae60"
+                    value={
+                      order.currency&& order?.currency !== 'EUR' // Check if order.currency is not EUR
+                        ?  `${formatCurrency(
+                            v?.price?.cost_breakdown?.total_price,
+                            order.currency
+                          )} ${order.currency}`
+                        : `${v?.price?.cost_breakdown?.total_price?.toFixed(
+                            2
+                          )} EUR`
+                    }
+                    sx={{ fontWeight: "bold", mt: 1 }}
+                  />
                 </Box>
+
                 {/* Qty / Price Section */}
                 <Box>
                   <Typography fontWeight="bold" mb={1}>
@@ -193,6 +264,12 @@ const DetailPanel = ({ order }: { order: any }) => {
             color="#27ae60"
             value={`${order?.country?.label} ${order?.city} ${order?.street}`}
           />
+          {/* Currency */}
+          <InfoLabel
+            label="Currency"
+            color="#27ae60"
+            value={order?.currency || "EUR"}
+            />
         </Box>
       </Box>
 
@@ -210,7 +287,7 @@ const DetailPanel = ({ order }: { order: any }) => {
         <InfoLabel
           label="Net price"
           color="#587B5B"
-          value={order?.totalAmount}
+          value={order.currency && order.currency !=='EUR'?formatCurrency(order?.totalAmount,order.currency):order.totalAmount + 'EUR'}
         />
         <InfoLabel
           label="Shipping"
@@ -223,7 +300,7 @@ const DetailPanel = ({ order }: { order: any }) => {
           color="#587B5B"
           value={order?.additionalCost?.vat_rate}
         />
-        <InfoLabel label="Total" color="#D63638" value={order?.totalAmount} />
+        <InfoLabel label="Total" color="#D63638" value={order.currency && order.currency !=='EUR'?formatCurrency(order?.totalAmount,order.currency):order.totalAmount + 'EUR'} />
       </Box>
     </Box>
   );
