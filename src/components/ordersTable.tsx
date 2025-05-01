@@ -64,7 +64,7 @@ const OrdersTable = () => {
     const fetchOrders = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get("/api/api/orders", {
+        const response = await axios.get("https://fastcnc-dxf-app-master-1.onrender.com/api/orders", {
           params: {
             page: pagination.pageIndex + 1,
             limit: pagination.pageSize
@@ -127,7 +127,7 @@ const OrdersTable = () => {
             const newStatus = event.target.value;
             setIsUpdating(true);
             try {
-              await axios.put(`/api/api/orders/${row.original._id}/status`, {
+              await axios.put(`https://fastcnc-dxf-app-master-1.onrender.com/api/orders/${row.original._id}/status`, {
                 status: newStatus
               });
               console.log("Status updated successfully",newStatus);
