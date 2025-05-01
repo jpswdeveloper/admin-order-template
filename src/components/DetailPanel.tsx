@@ -11,25 +11,28 @@ const DetailPanel = ({ order }: { order: any }) => {
         sx={{
           display: "flex",
           justifyContent: "space-between",
-          gap: 2,
+          // gap: 2,
           padding: 2,
           fontSize: "0.875rem"
         }}
       >
+        <Box sx={{ flex: 2 }}>
+
+          
         {/* Metrics Section */}
-        {order.materialDetails.map(v => {
+        {order.materialDetails.map((v,index)=> {
           return (
-            <>
+            <Box key={v._id} sx={{display: "flex", mb: 2,  justifyContent:'space-evenly',}}>
               <Box>
                 <Typography fontWeight="bold" mb={1}>
-                  Metrics
+                  Metrics #{index + 1}
                 </Typography>
                 <LabelBlock
                   label="Material"
                   color="#f1c40f"
                   value="Steel S235 / 1.0038"
                   suffix="6.0 mm"
-                />
+                  />
                 <LabelBlock
                   label="Dimensions"
                   color="#3498db"
@@ -96,12 +99,13 @@ const DetailPanel = ({ order }: { order: any }) => {
                   </a>
                 </Box>
               </Box>
-            </>
+            </Box>
           );
         })}
+        </Box>
 
         {/* Order Info */}
-        <Box>
+        <Box sx={{ flex: 1 }}>
           <InfoLabel label="Order" color="#f1c40f" value={order._id} />
           <InfoLabel
             label="Created"
