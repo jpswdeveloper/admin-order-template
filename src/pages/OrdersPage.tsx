@@ -15,27 +15,28 @@ const OrdersPage = () => {
 
   useEffect(() => {
     // Double-check authentication on component mount
-    const isAuthenticated = localStorage.getItem('authenticated') === 'true';
+    const isAuthenticated = localStorage.getItem("authenticated") === "true";
     if (!isAuthenticated) {
-      navigate('/login', { replace: true });
+      navigate("/login", { replace: true });
     }
   }, [navigate]);
 
   const handleLogout = () => {
     localStorage.removeItem("authenticated");
     // Force a full page reload to reset all state
-    window.location.href = '/login';
+    window.location.href = "/login";
   };
 
   return (
     <Box
       sx={{
-        overflow: 'hidden',
+        overflow: "hidden",
         height: "100vh",
-        // background: `linear-gradient(to bottom right, #0f172a, #1e293b)`,
+        width: "100%",
+        display: "flex"
       }}
     >
-      <Container maxWidth="lg" sx={{ py: 6 }}>
+      <Container maxWidth={false} disableGutters sx={{ py: 4 ,px:2, width: "100%" }}>
         <Stack
           direction="row"
           justifyContent="space-between"
@@ -54,9 +55,8 @@ const OrdersPage = () => {
             Logout
           </Button>
         </Stack>
-        <Paper elevation={6} sx={{ p: 4, borderRadius: 4 }}>
-          <OrdersTable />
-        </Paper>
+
+        <OrdersTable />
       </Container>
     </Box>
   );

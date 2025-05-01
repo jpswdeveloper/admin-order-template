@@ -36,7 +36,7 @@ type Order = {
   country?:{
     label:string
   };
-  total_amount: any;
+  totalAmount: number;
   _id: string;
   id: number;
   price: number;
@@ -64,7 +64,7 @@ const OrdersTable = () => {
     const fetchOrders = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get("https://fastcnc-dxf-app-master-1.onrender.com/api/orders", {
+        const response = await axios.get("/api/api/orders", {
           params: {
             page: pagination.pageIndex + 1,
             limit: pagination.pageSize
@@ -92,7 +92,7 @@ const OrdersTable = () => {
       {
         accessorKey: "price",
         header: "Price",
-        Cell: ({ row }) => row.original.total_amount?.toFixed(2)
+        Cell: ({ row }) => row.original.totalAmount?.toFixed(2)
       },
       { accessorKey: "name", header: "Name" },
       { accessorKey: "phone", header: "Phone" },
@@ -127,7 +127,7 @@ const OrdersTable = () => {
             const newStatus = event.target.value;
             setIsUpdating(true);
             try {
-              await axios.put(`https://fastcnc-dxf-app-master-1.onrender.com/api/orders/${row.original._id}/status`, {
+              await axios.put(`/api/api/orders/${row.original._id}/status`, {
                 status: newStatus
               });
               console.log("Status updated successfully",newStatus);
@@ -141,10 +141,10 @@ const OrdersTable = () => {
           };
       
           const statusColors = {
-            Pending: "#f39c12",
+            pending: "#f39c12",
             "In Progress": "#3498db",
-            Manufactured: "#2ecc71",
-            Delivered: "#27ae60"
+            manufactured: "#2ecc71",
+            delivered: "#27ae60"
           };
       
           return (
@@ -197,7 +197,7 @@ const OrdersTable = () => {
                           marginRight: 1,
                         }}
                       />
-                      {key}
+                      {key.toUpperCase()}
                     </Box>
                   </MenuItem>
                 ))}

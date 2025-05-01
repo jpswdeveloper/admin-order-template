@@ -2,6 +2,7 @@ import React from "react";
 import { Box, Typography } from "@mui/material";
 
 const DetailPanel = ({ order }: { order: any }) => {
+  console.log("DetailPanel order", order);
   return (
     <Box>
       {/* Metrics will be iterateable */}
@@ -67,8 +68,14 @@ const DetailPanel = ({ order }: { order: any }) => {
                   Qty / Price
                 </Typography>
                 <Box display="flex" alignItems="center" gap={1}>
-                  <span>{v?.price?.quantity} x {v?.price?.cost_breakdown?.total_price}  =</span>
-                  <StyledTag>{v?.price?.quantity} x {v?.price?.cost_breakdown?.total_price}</StyledTag>
+                  <span>
+                    {v?.price?.quantity} x{" "}
+                    {v?.price?.cost_breakdown?.total_price} =
+                  </span>
+                  <StyledTag>
+                    {v?.price?.quantity} x{" "}
+                    {v?.price?.cost_breakdown?.total_price}
+                  </StyledTag>
                 </Box>
               </Box>
 
@@ -78,8 +85,13 @@ const DetailPanel = ({ order }: { order: any }) => {
                   Picture
                 </Typography>
                 <Box display="flex" alignItems="center" gap={1} mb={2}>
-                  <span>{v.file_url}</span>
-                  <a href={`/api${v.file_url}`} style={{ color: "#2980b9" }}>
+                  <span>{v.svg_url}</span>
+                  <a
+                    href={`https://flusk-backend.onrender.com${v.svg_url}`}
+                    style={{ color: "#2980b9" }}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     View
                   </a>
                 </Box>
@@ -94,24 +106,26 @@ const DetailPanel = ({ order }: { order: any }) => {
           <InfoLabel
             label="Created"
             color="#27ae60"
-            value={new Date(order.updated).toLocaleString()||new Date().toLocaleString()}
+            value={
+              new Date(order.created_at).toLocaleString() ||
+              new Date().toLocaleString()
+            }
           />
           <InfoLabel
             label="Updated"
             color="#27ae60"
-            value={new Date(order.updated).toLocaleString()||new Date().toLocaleString()}
+            value={
+              new Date(order.updated_at).toLocaleString() ||
+              new Date().toLocaleString()
+            }
           />
           <InfoLabel label="User" color="#27ae60" value={order.phone} />
-          <InfoLabel
-            label="Email"
-            color="#27ae60"
-            value={order.email}
-          />
+          <InfoLabel label="Email" color="#27ae60" value={order.email} />
           <InfoLabel label="Phone" color="#27ae60" value={order.phone} />
           <InfoLabel
             label="Address"
             color="#27ae60"
-            value={order.address}
+            value={`${order?.country?.label} ${order?.city} ${order?.street}`}
           />
         </Box>
       </Box>
@@ -127,10 +141,22 @@ const DetailPanel = ({ order }: { order: any }) => {
           py: 1
         }}
       >
-        <InfoLabel label="Net price" color="#587B5B" value={order?.totalAmount} />
-        <InfoLabel label="Shipping" color="#587B5B" value={order?.additionalCost?.shipping_cost} />
+        <InfoLabel
+          label="Net price"
+          color="#587B5B"
+          value={order?.totalAmount}
+        />
+        <InfoLabel
+          label="Shipping"
+          color="#587B5B"
+          value={order?.additionalCost?.shipping_cost}
+        />
         {/* <InfoLabel label="VAT (23.0%)" color="#587B5B" value={order.additionalCost.vat_rate} /> */}
-        <InfoLabel label={`VAT (${order?.additionalCost?.vat_rate}%)`} color="#587B5B" value={order?.additionalCost?.vat_rate} />
+        <InfoLabel
+          label={`VAT (${order?.additionalCost?.vat_rate}%)`}
+          color="#587B5B"
+          value={order?.additionalCost?.vat_rate}
+        />
         <InfoLabel label="Total" color="#D63638" value={order?.totalAmount} />
       </Box>
     </Box>
