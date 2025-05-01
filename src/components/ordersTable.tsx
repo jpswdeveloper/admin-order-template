@@ -45,7 +45,7 @@ type Order = {
   address: string;
   vat: string;
   updated: string;
-  status: "Pending" | "In Progress" | "Manufactured" | "Delivered";
+  status: "Pending" | "In Progress" | "Manufactured" | "Delivered"|"Cancelled";
   email?: string;
   finalized:boolean;
   created_at?: string;
@@ -144,7 +144,8 @@ const OrdersTable = () => {
             pending: "#f39c12",
             "In Progress": "#3498db",
             manufactured: "#2ecc71",
-            delivered: "#27ae60"
+            delivered: "#27ae60",
+            cancelled: "#e74c3c"
           };
       
           return (
@@ -244,6 +245,7 @@ const OrdersTable = () => {
     state: { pagination },
     onPaginationChange: setPagination,
     enablePagination: true,
+    enableDensityToggle: false,
     renderDetailPanel: ({ row }) => (
       <Box p={2} sx={{ backgroundColor: "#f8f9fa" }}>
         <DetailPanel order={row.original} />
