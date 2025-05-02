@@ -22,14 +22,14 @@ const DetailPanel = ({ order }: { order: any }) => {
     const convertedValue = rates
       ? convertAmount(value, currency, rates)
       : value;
-      console.log("Converted Value", value,currency);
-
-    return new Intl.NumberFormat(undefined, {
-      style: "currency",
-      currency: targetCurrency,
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    }).format(convertedValue);
+    console.log("Converted Value", value, currency);
+    return convertedValue;
+    // return new Intl.NumberFormat(undefined, {
+    //   style: "currency",
+    //   currency: targetCurrency,
+    //   minimumFractionDigits: 2,
+    //   maximumFractionDigits: 2
+    // }).format(convertedValue);
   };
 
   if (isLoading) return <div>Loading currency rates...</div>;
@@ -92,7 +92,7 @@ const DetailPanel = ({ order }: { order: any }) => {
                       4
                     )} m² × ${v.price?.original_costs?.cost_per_m2}`}
                     suffix={`= ${
-                      order.currency&&order.currency !== "EUR"
+                      order.currency && order.currency !== "EUR"
                         ? `${formatCurrency(
                             (v.data?.surface_area / 1000000) *
                               v.price?.original_costs?.cost_per_m2,
@@ -113,7 +113,7 @@ const DetailPanel = ({ order }: { order: any }) => {
                       v.price?.original_costs?.cost_factor
                     }`}
                     suffix={`= ${
-                      order.currency&&order.currency
+                      order.currency && order.currency
                         ? `${formatCurrency(
                             (v.data?.cutting_line / 1000) *
                               v.price?.original_costs?.cost_factor,
@@ -132,7 +132,7 @@ const DetailPanel = ({ order }: { order: any }) => {
                     color="#2980b9"
                     value={`${v.data?.closed_loops} × ${v.price?.original_costs?.loop_cost_per_loop}`}
                     suffix={`= ${
-                      order.currency&& order.currency !=='EUR'                      // Check if order.currency is not EUR
+                      order.currency && order.currency !== "EUR" // Check if order.currency is not EUR
                         ? `${formatCurrency(
                             v.data?.closed_loops *
                               v.price?.original_costs?.loop_cost_per_loop,
@@ -151,7 +151,7 @@ const DetailPanel = ({ order }: { order: any }) => {
                     color="#95a5a6"
                     value={`${v.price?.cost_breakdown?.setup_price} / ${v?.price?.quantity}`}
                     suffix={`= ${
-                      order.currency&& order.currency !== 'EUR' // Check if order.currency is not EUR
+                      order.currency && order.currency !== "EUR" // Check if order.currency is not EUR
                         ? `${formatCurrency(
                             v.price?.cost_breakdown?.setup_price /
                               v?.data?.quantity,
@@ -165,7 +165,7 @@ const DetailPanel = ({ order }: { order: any }) => {
                   />
 
                   {/* Unit Price */}
-                  <LabelBlock
+                  {/* <LabelBlock
                     label="Unit Price"
                     color="#c0392b"
                     value={
@@ -178,15 +178,15 @@ const DetailPanel = ({ order }: { order: any }) => {
                             2
                           )} EUR`
                     }
-                  />
+                  /> */}
 
                   {/* Total Price */}
                   <LabelBlock
                     label="Total Price"
                     color="#27ae60"
                     value={
-                      order.currency&& order?.currency !== 'EUR' // Check if order.currency is not EUR
-                        ?  `${formatCurrency(
+                      order.currency && order?.currency !== "EUR" // Check if order.currency is not EUR
+                        ? `${formatCurrency(
                             v?.price?.cost_breakdown?.total_price,
                             order.currency
                           )} ${order.currency}`
@@ -205,12 +205,28 @@ const DetailPanel = ({ order }: { order: any }) => {
                   </Typography>
                   <Box display="flex" alignItems="center" gap={1}>
                     <span>
-                      {v?.price?.quantity} x{" "}
-                      {v.price?.cost_breakdown?.setup_price} =
+                      {order.currency && order?.currency !== "EUR"
+                        ? `${formatCurrency(
+                            v?.price?.cost_breakdown?.total_price,
+                            order.currency
+                          )} ${order.currency}`
+                        : `${v?.price?.cost_breakdown?.total_price?.toFixed(
+                            2
+                          )} EUR`}
+                      / {v.price?.quantity + "pcs"} =
                     </span>
                     <StyledTag>
-                      {v?.price?.quantity} x{" "}
-                      {v.price?.cost_breakdown?.setup_price}
+                      {order.currency && order?.currency !== "EUR"
+                        ? `${
+                            (formatCurrency(
+                              v?.price?.cost_breakdown?.total_price,
+                              order.currency
+                            ) / v.price?.quantity).toFixed(2) 
+                          } ${order.currency}`
+                        : `${
+                            v?.price?.cost_breakdown?.total_price /
+                            v.price?.quantity
+                          }+ 'EUR'`}
                     </StyledTag>
                   </Box>
                 </Box>
@@ -269,7 +285,7 @@ const DetailPanel = ({ order }: { order: any }) => {
             label="Currency"
             color="#27ae60"
             value={order?.currency || "EUR"}
-            />
+          />
         </Box>
       </Box>
 
@@ -287,7 +303,11 @@ const DetailPanel = ({ order }: { order: any }) => {
         <InfoLabel
           label="Net price"
           color="#587B5B"
-          value={order.currency && order.currency !=='EUR'?formatCurrency(order?.totalAmount,order.currency):order.totalAmount + 'EUR'}
+          value={
+            order.currency && order.currency !== "EUR"
+              ? formatCurrency(order?.totalAmount, order.currency)
+              : order.totalAmount + "EUR"
+          }
         />
         <InfoLabel
           label="Shipping"
@@ -300,7 +320,15 @@ const DetailPanel = ({ order }: { order: any }) => {
           color="#587B5B"
           value={order?.additionalCost?.vat_rate}
         />
-        <InfoLabel label="Total" color="#D63638" value={order.currency && order.currency !=='EUR'?formatCurrency(order?.totalAmount,order.currency):order.totalAmount + 'EUR'} />
+        <InfoLabel
+          label="Total"
+          color="#D63638"
+          value={
+            order.currency && order.currency !== "EUR"
+              ? formatCurrency(order?.totalAmount, order.currency)
+              : order.totalAmount + "EUR"
+          }
+        />
       </Box>
     </Box>
   );
