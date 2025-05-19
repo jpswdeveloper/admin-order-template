@@ -60,11 +60,12 @@ const OrdersTable = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
 
+  const base_url=import.meta.env.VITE_BASE_URL
   useEffect(() => {
     const fetchOrders = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get("https://fastcnc-dxf-app-master-1.onrender.com/api/orders", {
+        const response = await axios.get(`${base_url}/orders`, {
           params: {
             page: pagination.pageIndex + 1,
             limit: pagination.pageSize
@@ -127,7 +128,7 @@ const OrdersTable = () => {
             const newStatus = event.target.value;
             setIsUpdating(true);
             try {
-              await axios.put(`https://fastcnc-dxf-app-master-1.onrender.com/api/orders/${row.original._id}/status`, {
+              await axios.put(`${base_url}/orders/${row.original._id}/status`, {
                 status: newStatus
               });
               console.log("Status updated successfully",newStatus);
