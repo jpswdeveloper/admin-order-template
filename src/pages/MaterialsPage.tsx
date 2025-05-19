@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import OrdersTable from "../components/ordersTable";
 import {
   Box,
   Container,
@@ -8,8 +7,9 @@ import {
   Button,
   Stack
 } from "@mui/material";
+import MaterialTable from "../components/materials";
 
-const OrdersPage = () => {
+const MaterialsPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -29,20 +29,23 @@ const OrdersPage = () => {
   return (
     <Box
       sx={{
-        height: "100vh",
+        height: "100%",
+        // width: "100%",
         display: "flex",
         flexDirection: "column",
-        overflow: "hidden",
+        // overflow: "hidden",
       }}
     >
       {/* Header Section - takes 20% of height */}
       <Box
         sx={{
           display: "flex",
-          alignItems: "center",
+          // alignItems: "center",
           backgroundColor: "white",
           boxShadow: 1,
-          p: 2
+          // p: 2,
+          // height:'5%'
+          
         }}
       >
         <Container maxWidth={false} sx={{ height: "100%" }}>
@@ -54,10 +57,10 @@ const OrdersPage = () => {
           >
             <Box>
               <Typography variant="h4" fontWeight="bold">
-                Orders Dashboard
+                Materials Dashboard
               </Typography>
               <Typography variant="subtitle1" color="text.secondary">
-                Manage all customer orders
+                Manage all materials
               </Typography>
             </Box>
             <Button
@@ -81,25 +84,24 @@ const OrdersPage = () => {
       <Box
         sx={{
           height: "80%",
-          overflow: "hidden",
-          p: 2
+          width:"100%",          
         }}
       >
-        <Container
+       <Container
           maxWidth={false}
           sx={{
             height: "100%",
             display: "flex",
-            width:"calc(100vw - 240px)",
             flexDirection: "column",
-            p: 2
+            width:"calc(100vw - 240px)",
+            p:3
           }}
         >
-          <OrdersTable />
+          <MaterialTable />
         </Container>
       </Box>
     </Box>
   );
 };
 
-export default OrdersPage;
+export default MaterialsPage;
