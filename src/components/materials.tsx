@@ -31,20 +31,21 @@ type MaterialRow = {
   stock: boolean;
 };
 
-
 export default function MaterialTable() {
   const [editRowIndex, setEditRowIndex] = useState<number | null>(null);
   const [rowValues, setRowValues] = useState<MaterialRow | null>(null);
   const [data, setData] = useState<MaterialRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 10
   });
-  
+
   const [rowCount, setRowCount] = useState(0);
-  
-    const base_url = import.meta.env.VITE_BASE_URL;
+
+  const base_url = import.meta.env.VITE_BASE_URL;
+  console.log({ base_url });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -71,15 +72,18 @@ export default function MaterialTable() {
 
   const handleSave = async () => {
     if (editRowIndex !== null && rowValues) {
+      setUpdating(true);
       try {
+        const baseUrl = import.meta.env.VITE_BASE_URL;
         const url = rowValues._id
-          ? `/api/api/materials/${rowValues._id}`
-          : "/api/api/materials";
+          ? `${baseUrl}/materials/${rowValues._id}`
+          : `${baseUrl}/api/api/materials`;
         const method = rowValues._id ? "put" : "post";
 
         const response = await axios[method](url, rowValues);
-
+        console.log("row values", rowValues);
         const updated = [...data];
+
         if (rowValues._id) {
           // Update existing
           updated[editRowIndex] = response.data;
@@ -87,6 +91,7 @@ export default function MaterialTable() {
           // Add new
           updated.push(response.data);
         }
+        setUpdating(false);
         setData(updated);
       } catch (error) {
         console.error("Failed to save row:", error);
@@ -105,12 +110,14 @@ export default function MaterialTable() {
   const handleDelete = async (index: number) => {
     const row = data[index];
     if (!row._id) return;
+    setUpdating(false);
 
     try {
       await axios.delete(`${base_url}/materials/${row._id}`);
       const updated = [...data];
       updated.splice(index, 1);
       setData(updated);
+      setUpdating(true);
       setRowCount(prev => prev - 1);
     } catch (error) {
       console.error("Failed to delete row:", error);
@@ -183,7 +190,7 @@ export default function MaterialTable() {
         )
     },
     {
-      header: "Setup Price (€)",
+      header: "Setup Price",
       accessorKey: "setupPrice",
       Cell: ({ row, cell }) =>
         editRowIndex === row.index ? (
@@ -223,7 +230,7 @@ export default function MaterialTable() {
         )
     },
     {
-      header: "Loop Cost (€)",
+      header: "Loop Cost",
       accessorKey: "loopCost",
       Cell: ({ row, cell }) =>
         editRowIndex === row.index ? (
@@ -243,7 +250,7 @@ export default function MaterialTable() {
         )
     },
     {
-      header: "Cost per m² (€)",
+      header: "Cost per m² ",
       accessorKey: "costPerM2",
       Cell: ({ row, cell }) =>
         editRowIndex === row.index ? (
@@ -293,12 +300,20 @@ export default function MaterialTable() {
         editRowIndex === row.index ? (
           <Box display="flex" gap={1}>
             <Tooltip title="Save">
-              <IconButton onClick={handleSave} color="success">
+              <IconButton
+                onClick={handleSave}
+                color="success"
+                disabled={updating}
+              >
                 <SaveIcon />
               </IconButton>
             </Tooltip>
             <Tooltip title="Cancel">
-              <IconButton onClick={handleCancel} color="error">
+              <IconButton
+                onClick={handleCancel}
+                color="error"
+                disabled={updating}
+              >
                 <CancelIcon />
               </IconButton>
             </Tooltip>
@@ -311,12 +326,13 @@ export default function MaterialTable() {
                   setEditRowIndex(row.index);
                   setRowValues({ ...row.original });
                 }}
+                disabled={updating}
               >
                 <EditIcon />
               </IconButton>
             </Tooltip>
             <Tooltip title="Delete">
-              <IconButton onClick={() => handleDelete(row.index)} color="error">
+              <IconButton onClick={() => handleDelete(row.index)} color="error" disabled={updating}>
                 <DeleteIcon />
               </IconButton>
             </Tooltip>
